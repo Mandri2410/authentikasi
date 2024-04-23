@@ -6,7 +6,7 @@
                 <div class="card">
                     <div class="card-header">{{ __('Dashboard') }}</div>
                     <div class="card-body">
-                        Selamat datang Wakil Dekan 2
+                      Login to Admin Keuangan
                     </div>
                 </div>
             </div>

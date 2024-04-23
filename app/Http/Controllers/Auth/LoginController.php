@@ -3,25 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use App\Providers\RouteServiceProvider;
 
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
-
     use AuthenticatesUsers;
 
     /**
@@ -38,41 +28,66 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+        // Middleware 'guest' ensures that authenticated users cannot access login route
+       $this->middleware('guest')->except('logout');
     }
 
     /**
-     * Create a new controller instance.
+     * Handle a login request to the application.
      *
-     * @return RedirectResponse
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function login(Request $request): RedirectResponse
     {
-        $input = $request->all();
-        $this->validate($request, [
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-        if (
-            auth()->attempt(
-                array(
-                    'email' => $input['email'],
-                    'password' => $input['password']
-                )
-            )
-        ) {
-            if (auth()->user()->type == 'admin') {
-                return redirect()->route('admin.home');
-            } else if (auth()->user()->type == 'manager') {
-                return redirect()->route('manager.home');
-            } else if (auth()->user()->type == 'superadmin') {
-                return redirect()->route('superadmin.home');
-            } else {
-                return redirect()->route('home');
+        // Validating user input
+      $input = $request->validate([
+          'email' => 'required|email',
+          'password' => 'required',
+      ]);
+
+        // Attempting authentication
+          if (Auth::attempt($input)) {
+          // Debugging: Check if user is authenticate
+            // Redirecting based on user type
+            switch (auth()->user()->type) {
+                case 'admin':
+                    return redirect()->route('admin.home');
+                case 'manager':
+                    return redirect()->route('manager.home');
+                case 'superadmin':
+                    return redirect()->route('superadmin.home');
+                case 'dosen':
+                    return redirect()->route('dosen.home');
+                case 'mahasiswa':
+                    return redirect()->route('mahasiswa.home');
+                case 'tendik':
+                    return redirect()->route('tendik.home');
+                case 'adminakademik':
+                    return redirect()->route('adminakademik.home');
+                case 'adminkeuangan':
+                    return redirect()->route('adminkeuangan.home');
+                case 'direktur':
+                    return redirect()->route('direktur.home');
+                case 'wakildirektur1':
+                    return redirect()->route('wakildirektur1.home');
+                case 'wakildirektur2':
+                    return redirect()->route('wakildirektur2.home');
+                case 'wakildirektur3':
+                    return redirect()->route('wakildirektur3.home');
+                case 'adminlppm':
+                    return redirect()->route('adminlppm.home');
+                case 'adminsdm':
+                    return redirect()->route('adminsdm.home');
+                default:
+                    return redirect()->route('home');
             }
         } else {
-            return redirect()->route('login')
-                ->with('error', 'Email-Address And Password Are Wrong.');
+            // Redirecting back to login with error message
+            return redirect()->route('login')->with('error', 'Email-Address and Password Are Wrong.');
         }
+
+        
+      }
+
     }
-}
